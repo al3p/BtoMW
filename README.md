@@ -17,8 +17,8 @@ In the meanwhile the development will be documented in the [BtoMW Wiki](https://
 
 Script is being developed with:
 
-* Blender 2.60, plain vanilla - downloadable from main site
-* Maxwell Render python binding, released with 2.5 version
+* Blender 2.62, plain vanilla - downloadable from main site
+* Maxwell Render python binding, released with 2.6.10 version
 
 ## LICENSING
 
