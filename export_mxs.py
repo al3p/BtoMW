@@ -18,7 +18,11 @@
 
 # Release Log (more info in __init__.py for io_export_maxwell)
 # ============================================================
-# 0.5 First Public release 
+# 0.5a Bugfix
+# * fix error in duplicate material export 
+# ------------
+# 0.5 First Public release
+# * fix backward compatibility with 2.61 matrix access 
 # ------------
 # 0.4 Private release 
 # * cleaning
@@ -54,7 +58,7 @@ from math import *
 import mathutils
 import bpy_extras.io_utils
 
-
+EXPRELEASE = "MXS Export 0.5a"
 
 
 # ===========================================================
@@ -147,7 +151,7 @@ class export:
         textname = None
         self.tobj=logutil.dotext(textname)
         self.tobj.tofile(filepath + ".log")
-        self.tobj.pprint("MXS Export 0.4",)
+        self.tobj.pprint(EXPRELEASE,)
         self.tobj.pprint("Blender: ", bpy.app.version_string)
         self.tobj.pprint("MXS Export path: ", filepath)
         
@@ -275,15 +279,18 @@ class export:
             mxZB = self.pm.Cvector()
             mxOB = self.pm.Cvector()
 
-            #mxXB.assign(mmat[0][0], mmat[0][1], mmat[0][2])
-            #mxYB.assign(mmat[1][0], mmat[1][1], mmat[1][2])
-            #mxZB.assign(mmat[2][0], mmat[2][1], mmat[2][2])
-            #mxOB.assign(obMat[3][0], obMat[3][1], obMat[3][2])
-
-            mxXB.assign(obMat[0][0], obMat[1][0], obMat[2][0])
-            mxYB.assign(obMat[0][1], obMat[1][1], obMat[2][1])
-            mxZB.assign(obMat[0][2], obMat[1][2], obMat[2][2])
-            mxOB.assign(obMat[0][3], obMat[1][3], obMat[2][3])
+            if (bpy.app.version[1] < 62):
+                # yes should be enough to transpose obMat before assignment
+                # more dirty than quick
+                mxXB.assign(obMat[0][0], obMat[0][1], obMat[0][2])
+                mxYB.assign(obMat[1][0], obMat[1][1], obMat[1][2])
+                mxZB.assign(obMat[2][0], obMat[2][1], obMat[2][2])
+                mxOB.assign(obMat[3][0], obMat[3][1], obMat[3][2])
+            else:
+                mxXB.assign(obMat[0][0], obMat[1][0], obMat[2][0])
+                mxYB.assign(obMat[0][1], obMat[1][1], obMat[2][1])
+                mxZB.assign(obMat[0][2], obMat[1][2], obMat[2][2])
+                mxOB.assign(obMat[0][3], obMat[1][3], obMat[2][3])
 
             newBase.origin = mxOB
             newBase.xAxis = mxXB
@@ -842,9 +849,12 @@ class export:
                     #XXX code duplicated from the above.
                     #see if works then optimize
                     # export all the materials list for this object
+                    fwdTriangleGroups = [] # maxwell object material slot = maxwell triangle group -> maxwell material 
                     if self.EXPORT_MTL:
                         for mSlot in ob.material_slots:
-                            MxMaterial = writeMaterial(Mx, mSlot.material, exportedMaterials)
+                            fwdTriangleGroups.append(writeMaterial(Mx, mSlot.material, exportedMaterials))
+                    fwdTriangleGroups = [x for x in fwdTriangleGroups if not(x is None)]
+                    numMaterials = len(fwdTriangleGroups)
                     # assign default object
                     if ob.active_material and (ob.active_material.name in exportedMaterials) and (numMaterials == 1):
                          MxObject.setMaterial(exportedMaterials[ob.active_material.name])
