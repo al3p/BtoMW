@@ -9,9 +9,9 @@ BtoMW is a python script to convert [Blender](http://www.blender.org) scene to [
 
 The script, although is capable of basic export of Blender objects, is in early beta stage and not ready for distribution.
 
-Some more testing is required in order to have a first release
+First release ready
 
-In the meanwhile the development will be documented in the [BtoMW Wiki](https://github.com/al3p/BtoMW/wiki)
+For usage and development documentation look in the [BtoMW Wiki](https://github.com/al3p/BtoMW/wiki)
 
 ## REQUIREMENTS
 
