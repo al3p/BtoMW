@@ -66,7 +66,7 @@ from math import *
 import mathutils
 import bpy_extras.io_utils
 
-EXPRELEASE = "MXS Export 0.5a"
+EXPRELEASE = "MXS Export 0.5c"
 
 
 # ===========================================================
